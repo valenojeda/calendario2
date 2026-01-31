@@ -2,7 +2,11 @@ import { db, auth } from "./firebase.js";
 import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
+// Configuramos el provider de Google
 const provider = new GoogleAuthProvider();
+// ⚡ Forzar siempre que el usuario elija la cuenta
+provider.setCustomParameters({ prompt: "select_account" });
+
 const signInBtn = document.getElementById("signInBtn");
 const signOutBtn = document.getElementById("signOutBtn");
 const userNameSpan = document.getElementById("userName");
