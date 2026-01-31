@@ -1,5 +1,12 @@
 import { db } from "./firebase.js";
-
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  onSnapshot,
+  arrayUnion,
+  arrayRemove
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 // Variables globales
 const calendar = document.getElementById("calendar");
@@ -28,32 +35,68 @@ let activeTaskIndex = null;
 // Obtener el ID del calendario desde la URL
 const urlParams = new URLSearchParams(window.location.search);
 const activeCalendarId = urlParams.get('id');
+if (!activeCalendarId) window.location.href = "home.html";
 
-// Si no se encuentra un ID, redirigir al inicio
-if (!activeCalendarId) {
-  window.location.href = "home.html"; // Redirige a home si no hay ID
-} 
+// Referencia al documento del calendario
+const calendarRef = doc(db, "calendarios", activeCalendarId);
+let tasks = [];
 
-// Cargar el calendario desde localStorage
-let data = JSON.parse(localStorage.getItem("calendarios")) || { calendarios: [] };
-let calendarData = data.calendarios.find(c => c.id === activeCalendarId);
+// Escuchar cambios en tiempo real
+onSnapshot(calendarRef, (docSnap) => {
+  if (!docSnap.exists()) {
+    alert("Calendario no encontrado");
+    window.location.href = "home.html";
+    return;
+  }
+  const calendarData = docSnap.data();
+  tasks = calendarData.tasks || [];
+  boardTitle.textContent = `Tablero - ${calendarData.nombre}`;
+  renderBoard();
+  renderCalendar();
+});
 
-// Verificar si se encontró el calendario, si no, redirigir al inicio
-if (!calendarData) {
-  window.location.href = "home.html"; // Redirigir a home si no se encuentra el calendario
-} 
+// ==================== FUNCIONES ==================== //
 
-let tasks = calendarData.tasks;
-
-// Funciones para manejar las tareas y el calendario
-
-// Guardar tareas en localStorage
-function saveTasks() {
-  calendarData.tasks = tasks;
-  localStorage.setItem("calendarios", JSON.stringify(data));
+// Guardar tasks completas en Firestore
+async function saveTasksFirestore() {
+  try {
+    await updateDoc(calendarRef, { tasks });
+  } catch (err) {
+    console.error("Error al guardar tareas:", err);
+  }
 }
 
-// Función para renderizar el calendario
+// Renderizar tablero
+function renderBoard() {
+  columns.forEach(c => document.getElementById(c).innerHTML = "");
+
+  tasks.forEach((task, index) => {
+    const card = document.createElement("div");
+    card.className = `task ${task.priority}`;
+
+    // Colores por prioridad
+    if (task.priority === "alta") card.style.backgroundColor = "#ff4d4d";
+    else if (task.priority === "media") card.style.backgroundColor = "#ffbf00";
+    else card.style.backgroundColor = "#c7f7c1";
+
+    const leftBtn = document.createElement("button");
+    leftBtn.textContent = "⬅️";
+    leftBtn.onclick = (e) => { e.stopPropagation(); moveTask(index, -1); };
+
+    const rightBtn = document.createElement("button");
+    rightBtn.textContent = "➡️";
+    rightBtn.onclick = (e) => { e.stopPropagation(); moveTask(index, 1); };
+
+    const title = document.createElement("span");
+    title.textContent = task.text;
+    title.addEventListener("click", () => openTaskModal(index));
+
+    card.append(leftBtn, title, rightBtn);
+    document.getElementById(task.status).appendChild(card);
+  });
+}
+
+// Renderizar calendario
 function renderCalendar() {
   calendar.innerHTML = "";
   const year = currentDate.getFullYear();
@@ -67,24 +110,24 @@ function renderCalendar() {
     dayElement.className = "day";
     dayElement.textContent = day;
 
-    // Resaltar días que tienen tareas asociadas
     if (tasks.some(task => task.date === dayStr)) {
       dayElement.classList.add("has-task");
     }
 
-    dayElement.addEventListener("click", () => showTasksForDay(dayStr));  // Mostrar tareas al hacer clic
+    dayElement.addEventListener("click", () => showTasksForDay(dayStr));
     calendar.appendChild(dayElement);
   }
 }
 
-// Mostrar tareas para un día específico
+// Mostrar tareas de un día
 function showTasksForDay(date) {
   const tasksForDay = tasks.filter(task => task.date === date);
-  alert(`Tareas para el día ${date}: \n` + tasksForDay.map(task => task.text).join("\n"));
+  if (tasksForDay.length === 0) alert(`No hay tareas para el día ${date}`);
+  else alert(`Tareas para el día ${date}: \n` + tasksForDay.map(t => t.text).join("\n"));
 }
 
-// Función para agregar nuevas tareas
-document.getElementById("add").onclick = () => {
+// Agregar nueva tarea
+document.getElementById("add").onclick = async () => {
   const text = textInput.value.trim();
   const description = descInput.value.trim();
   const date = dateInput.value;
@@ -92,118 +135,52 @@ document.getElementById("add").onclick = () => {
 
   if (!text || !date) return;
 
-  const newTask = {
-    text,
-    description,
-    date,
-    priority,
-    status: "pending"  // Asignamos la tarea como pendiente por defecto
-  };
-
+  const newTask = { text, description, date, priority, status: "pending" };
   tasks.push(newTask);
-  saveTasks();
-  renderBoard();  // Actualizamos el tablero
-  renderCalendar();  // Actualizamos el calendario
+  await saveTasksFirestore();
   textInput.value = "";
   descInput.value = "";
 };
 
-// Función para mover tareas entre columnas del tablero
-function moveTask(index, direction) {
+// Mover tarea
+async function moveTask(index, direction) {
   const currentStatusIndex = columns.indexOf(tasks[index].status);
   const newStatusIndex = currentStatusIndex + direction;
+  if (newStatusIndex < 0 || newStatusIndex >= columns.length) return;
 
-  if (newStatusIndex >= 0 && newStatusIndex < columns.length) {
-    tasks[index].status = columns[newStatusIndex];
-    saveTasks();
-    renderBoard();  // Actualizamos el tablero
-    renderCalendar();  // Actualizamos el calendario
-  }
+  tasks[index].status = columns[newStatusIndex];
+  await saveTasksFirestore();
 }
 
-// Función para renderizar el tablero
-function renderBoard() {
-  columns.forEach(c => document.getElementById(c).innerHTML = "");  // Limpiar las columnas
-
-  tasks.forEach((task, index) => {
-    const card = document.createElement("div");
-    card.className = `task ${task.priority}`; // Agregar clase de prioridad
-
-    // Cambiar color de fondo según la prioridad
-    if (task.priority === "alta") {
-      card.style.backgroundColor = "#ff4d4d";  // Rojo para alta prioridad
-    } else if (task.priority === "media") {
-      card.style.backgroundColor = "#ffbf00";  // Amarillo para media prioridad
-    } else {
-      card.style.backgroundColor = "#c7f7c1";  // Verde suave para baja prioridad
-    }
-
-    // Agregar botones para mover la tarea
-    const leftBtn = document.createElement("button");
-    leftBtn.textContent = "⬅️";
-    leftBtn.onclick = (e) => { e.stopPropagation(); moveTask(index, -1); };
-
-    const rightBtn = document.createElement("button");
-    rightBtn.textContent = "➡️";
-    rightBtn.onclick = (e) => { e.stopPropagation(); moveTask(index, 1); };
-
-    const title = document.createElement("span");
-    title.textContent = task.text;
-    title.addEventListener("click", () => openTaskModal(index));  // Abre el modal para editar la tarea
-
-    card.append(leftBtn, title, rightBtn);
-    document.getElementById(task.status).appendChild(card);
-  });
-}
-
-// Función para abrir el modal de edición de tarea
+// Modal
 function openTaskModal(index) {
   activeTaskIndex = index;
   const task = tasks[index];
-
-  // Mostrar la fecha de la tarea en el modal
   modalInfo.textContent = `Fecha: ${task.date} | Prioridad: ${task.priority}`;
-
-  // Mostrar el título y la descripción
   editTitleInput.value = task.text;
   editDescInput.value = task.description || "";
-
   modal.classList.remove("hidden");
 }
 
-// Función para cerrar el modal
 document.getElementById("closeModal").onclick = () => modal.classList.add("hidden");
-
-// Función para editar tarea
-document.getElementById("editBtn").onclick = () => {
+document.getElementById("editBtn").onclick = async () => {
   const task = tasks[activeTaskIndex];
   task.text = editTitleInput.value;
   task.description = editDescInput.value;
-  saveTasks();
-  renderBoard();
-  renderCalendar();
+  await saveTasksFirestore();
   modal.classList.add("hidden");
 };
-
-// Función para eliminar tarea
-document.getElementById("deleteBtn").onclick = () => {
+document.getElementById("deleteBtn").onclick = async () => {
   if (confirm("¿Borrar esta tarea?")) {
     tasks.splice(activeTaskIndex, 1);
-    saveTasks();
-    renderBoard();
-    renderCalendar();
+    await saveTasksFirestore();
     modal.classList.add("hidden");
   }
 };
 
-// Función para manejar la navegación del calendario (mes anterior y siguiente)
+// Navegación del calendario
 document.getElementById("prev").onclick = () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); };
 document.getElementById("next").onclick = () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); };
 
-// Volver a la página de inicio
+// Volver a home
 goHomeBtn.onclick = () => { window.location.href = "home.html"; };
-
-// Inicializar la página
-boardTitle.textContent = `Tablero - ${calendarData.nombre}`;
-renderBoard();
-renderCalendar();
