@@ -17,9 +17,7 @@ const installBtn = document.getElementById("installBtn");
 
 const calendarsRef = collection(db, "calendarios");
 
-/* =========================
-   CREAR CALENDARIO
-========================= */
+/* ========================= CREAR CALENDARIO ========================= */
 createCalendarBtn.addEventListener("click", async () => {
   const name = calendarNameInput.value.trim();
   if (!name) return;
@@ -38,11 +36,10 @@ createCalendarBtn.addEventListener("click", async () => {
   }
 });
 
-/* =========================
-   CARGAR CALENDARIOS
-========================= */
+/* ========================= CARGAR CALENDARIOS ========================= */
 async function loadCalendars() {
   calendarContainer.innerHTML = "";
+  calendarContainer.classList.add("calendars-grid"); // agregamos grid
 
   try {
     const snapshot = await getDocs(calendarsRef);
@@ -56,19 +53,30 @@ async function loadCalendars() {
       const calendar = docSnap.data();
       const id = docSnap.id;
 
+      // Crear tarjeta
       const card = document.createElement("div");
       card.className = "calendar-card";
 
+      // Miniatura con inicial
+      const thumbnail = document.createElement("div");
+      thumbnail.className = "calendar-thumbnail";
+      thumbnail.textContent = calendar.nombre.charAt(0).toUpperCase();
+
+      // Título
       const title = document.createElement("h3");
       title.textContent = calendar.nombre;
 
+      // Botón abrir
       const openBtn = document.createElement("button");
+      openBtn.className = "open-btn";
       openBtn.textContent = "Abrir";
       openBtn.onclick = () => {
         window.location.href = `index.html?id=${id}`;
       };
 
+      // Botón borrar
       const deleteBtn = document.createElement("button");
+      deleteBtn.className = "delete-btn";
       deleteBtn.textContent = "🗑️ Borrar";
       deleteBtn.onclick = async () => {
         if (confirm("¿Borrar este calendario?")) {
@@ -77,9 +85,13 @@ async function loadCalendars() {
         }
       };
 
+      // Agregar elementos a la tarjeta
+      card.appendChild(thumbnail);
       card.appendChild(title);
       card.appendChild(openBtn);
       card.appendChild(deleteBtn);
+
+      // Agregar tarjeta al contenedor
       calendarContainer.appendChild(card);
     });
   } catch (err) {
@@ -89,9 +101,7 @@ async function loadCalendars() {
 
 loadCalendars();
 
-/* =========================
-   PWA – INSTALAR APP
-========================= */
+/* ========================= PWA – INSTALAR APP ========================= */
 let deferredPrompt;
 
 window.addEventListener("beforeinstallprompt", (e) => {
@@ -109,9 +119,7 @@ installBtn.addEventListener("click", async () => {
   installBtnContainer.style.display = "none";
 });
 
-/* =========================
-   SERVICE WORKER
-========================= */
+/* ========================= SERVICE WORKER ========================= */
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js");
 }
