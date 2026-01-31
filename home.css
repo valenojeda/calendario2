@@ -1,9 +1,7 @@
-/* ==================== ESTILOS GENERALES ==================== */
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: Arial, sans-serif;
   background-color: #f3f4f6;
-  margin: 0;
-  padding: 30px 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -12,171 +10,100 @@ body {
 h1 {
   font-size: 2rem;
   color: #64b3a8;
-  margin-bottom: 25px;
-  text-align: center;
+  margin-bottom: 20px;
 }
 
-/* ==================== INPUT + BOTÓN CREAR CALENDARIO ==================== */
-#createCalendarContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 30px;
+#userContainer {
+  margin-bottom: 20px;
+}
+
+#userContainer span {
+  margin-right: 10px;
+  font-weight: bold;
 }
 
 #calendarName {
-  padding: 12px 15px;
+  padding: 10px;
   font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  min-width: 180px;
-  outline: none;
-  transition: border 0.2s;
-}
-
-#calendarName:focus {
-  border-color: #64b3a8;
+  border-radius: 5px;
+  margin-right: 10px;
 }
 
 #createCalendarBtn {
-  padding: 12px 20px;
+  padding: 10px 20px;
   font-size: 1rem;
-  border-radius: 8px;
-  border: none;
   background-color: #64b3a8;
   color: white;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
 }
 
 #createCalendarBtn:hover {
   background-color: #4a9981;
-  transform: translateY(-2px);
 }
 
-/* ==================== GRID DE CALENDARIOS ==================== */
-.calendars-grid {
+.calendar-container {
   display: flex;
   flex-wrap: wrap;
+  gap: 15px;
   justify-content: center;
-  gap: 20px;
   margin-top: 20px;
 }
 
-/* ==================== TARJETA DEL CALENDARIO ==================== */
 .calendar-card {
   background-color: #e0f7fa;
-  width: 180px;             /* tamaño fijo */
-  border-radius: 15px;
-  padding: 15px;
+  border-radius: 12px;
+  padding: 20px;
+  width: 180px;
   text-align: center;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px; /* espacio entre elementos */
-  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.calendar-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-/* Miniatura con inicial */
-.calendar-thumbnail {
+.calendar-card .avatar {
   background-color: #64b3a8;
   color: white;
   font-size: 2rem;
-  font-weight: bold;
+  border-radius: 50%;
   width: 60px;
   height: 60px;
-  border-radius: 50%;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
 }
 
-/* Título del calendario */
-.calendar-card h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  word-break: break-word;
-  color: #03396c;
-}
-
-/* Botones */
 .calendar-card button {
-  width: 80%;
-  padding: 8px 0;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.2s;
-  margin-top: 4px;
-}
-
-.calendar-card button.open-btn {
-  background-color: #64b3a8;
-  color: white;
-}
-
-.calendar-card button.open-btn:hover {
-  background-color: #4a9981;
-}
-
-.calendar-card button.delete-btn {
+  margin-top: 10px;
+  padding: 5px 10px;
   background-color: #ff4d4d;
   color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.calendar-card button.delete-btn:hover {
+.calendar-card button:hover {
   background-color: #cc3e3e;
 }
 
-/* Botón instalar PWA */
 #installBtnContainer {
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 #installBtn {
-  padding: 12px 25px;
-  border-radius: 10px;
-  border: none;
   background-color: #64b3a8;
   color: white;
-  cursor: pointer;
+  border: none;
+  padding: 10px 20px;
   font-size: 1rem;
-  transition: background-color 0.2s, transform 0.2s;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 #installBtn:hover {
   background-color: #4a9981;
-  transform: translateY(-2px);
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 500px) {
-  .calendar-card {
-    width: 150px;
-  }
-
-  .calendar-thumbnail {
-    width: 50px;
-    height: 50px;
-    font-size: 1.5rem;
-  }
-
-  #calendarName {
-    width: 100%;
-    max-width: 250px;
-    margin-bottom: 10px;
-  }
-
-  #createCalendarBtn {
-    width: 100%;
-    max-width: 180px;
-  }
 }
