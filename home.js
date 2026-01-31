@@ -1,101 +1,90 @@
-// ================================
-// Cargar calendarios desde localStorage
-// ================================
+import { db } from "./firebase.js";
+
+// ===============================
+// CARGAR CALENDARIOS
+// ===============================
 function loadCalendars() {
   const calendarios = JSON.parse(localStorage.getItem("calendarios")) || { calendarios: [] };
-  const calendarContainer = document.getElementById("calendarContainer");
-
-  calendarContainer.innerHTML = "";
+  const container = document.getElementById("calendarContainer");
+  container.innerHTML = "";
 
   if (calendarios.calendarios.length === 0) {
-    calendarContainer.innerHTML = "<p>No tienes calendarios creados.</p>";
+    container.innerHTML = "<p>No tienes calendarios creados.</p>";
     return;
   }
 
   calendarios.calendarios.forEach((calendario, index) => {
-    const calendarCard = document.createElement("div");
-    calendarCard.classList.add("calendar-card");
+    const card = document.createElement("div");
+    card.className = "calendar-card";
 
-    const calendarIcon = document.createElement("div");
-    calendarIcon.classList.add("calendar-icon");
-    calendarIcon.textContent = calendario.nombre.charAt(0).toUpperCase();
+    const icon = document.createElement("div");
+    icon.className = "calendar-icon";
+    icon.textContent = calendario.nombre.charAt(0).toUpperCase();
 
-    const calendarName = document.createElement("h3");
-    calendarName.textContent = calendario.nombre;
+    const title = document.createElement("h3");
+    title.textContent = calendario.nombre;
 
-    const calendarLink = document.createElement("a");
-    calendarLink.href = `index.html?id=${calendario.id}`;
-    calendarLink.textContent = "Abrir calendario";
+    const link = document.createElement("a");
+    link.href = `index.html?id=${calendario.id}`;
+    link.textContent = "Abrir calendario";
 
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "🗑️ Borrar";
     deleteBtn.onclick = () => {
-      if (confirm("¿Seguro que quieres borrar este calendario?")) {
-        deleteCalendar(calendarios, index);
+      if (confirm("¿Borrar este calendario?")) {
+        calendarios.calendarios.splice(index, 1);
+        localStorage.setItem("calendarios", JSON.stringify(calendarios));
+        loadCalendars();
       }
     };
 
-    calendarCard.append(calendarIcon, calendarName, calendarLink, deleteBtn);
-    calendarContainer.appendChild(calendarCard);
+    card.append(icon, title, link, deleteBtn);
+    container.appendChild(card);
   });
 }
 
-// ================================
-// Crear nuevo calendario
-// ================================
+// ===============================
+// CREAR CALENDARIO
+// ===============================
 document.getElementById("createCalendarBtn").addEventListener("click", () => {
-  const calendarNameInput = document.getElementById("calendarName");
-  const calendarName = calendarNameInput.value.trim();
+  const input = document.getElementById("calendarName");
+  const name = input.value.trim();
 
-  if (!calendarName) {
-    alert("Por favor, ingresa un nombre para el calendario.");
+  if (!name) {
+    alert("Ingresá un nombre");
     return;
   }
 
-  const calendarios = JSON.parse(localStorage.getItem("calendarios")) || { calendarios: [] };
+  const data = JSON.parse(localStorage.getItem("calendarios")) || { calendarios: [] };
 
-  const newCalendar = {
-    id: crypto.randomUUID(), // ID único moderno
-    nombre: calendarName,
+  data.calendarios.push({
+    id: crypto.randomUUID(),
+    nombre: name,
     tasks: []
-  };
+  });
 
-  calendarios.calendarios.push(newCalendar);
-  localStorage.setItem("calendarios", JSON.stringify(calendarios));
-
-  calendarNameInput.value = "";
+  localStorage.setItem("calendarios", JSON.stringify(data));
+  input.value = "";
   loadCalendars();
 });
 
-// ================================
-// Borrar calendario
-// ================================
-function deleteCalendar(calendarios, index) {
-  calendarios.calendarios.splice(index, 1);
-  localStorage.setItem("calendarios", JSON.stringify(calendarios));
-  loadCalendars();
-}
-
-// ================================
-// Inicializar
-// ================================
 document.addEventListener("DOMContentLoaded", loadCalendars);
 
-// ================================
-// PWA - Service Worker
-// ================================
+// ===============================
+// SERVICE WORKER (CORREGIDO)
+// ===============================
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("/sw.js")
-      .then(reg => console.log("Service Worker registrado", reg))
-      .catch(err => console.log("Error SW", err));
+      .register("sw.js")
+      .then(() => console.log("✅ Service Worker registrado"))
+      .catch(err => console.error("❌ Error SW", err));
   });
 }
 
-// ================================
-// Instalación PWA
-// ================================
+// ===============================
+// INSTALACIÓN PWA
+// ===============================
 let deferredPrompt;
 const installBtnContainer = document.getElementById("installBtnContainer");
 const installBtn = document.getElementById("installBtn");
@@ -106,12 +95,9 @@ window.addEventListener("beforeinstallprompt", (e) => {
   installBtnContainer.style.display = "block";
 });
 
-installBtn.addEventListener("click", () => {
+installBtn.addEventListener("click", async () => {
   if (!deferredPrompt) return;
-
   deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(() => {
-    deferredPrompt = null;
-    installBtnContainer.style.display = "none";
-  });
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
 });

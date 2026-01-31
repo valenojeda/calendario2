@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <title>Calendarios</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <link rel="stylesheet" href="home.css" />
-  <link rel="manifest" href="/manifest.json" />
+  <link rel="manifest" href="manifest.json" />
 </head>
 <body>
 
@@ -16,15 +17,13 @@
     <button id="createCalendarBtn">Crear calendario</button>
   </div>
 
-  <div class="calendar-container" id="calendarContainer">
-    <!-- Los calendarios se renderizan acá -->
-  </div>
+  <div class="calendar-container" id="calendarContainer"></div>
 
   <div id="installBtnContainer" style="display: none;">
     <button id="installBtn">📲 Instalar la app</button>
   </div>
 
-  <!-- IMPORTANTE -->
+  <!-- IMPORTANTE: module -->
   <script type="module" src="home.js"></script>
 
 </body>
