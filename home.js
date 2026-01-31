@@ -1,49 +1,74 @@
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
 import {
   collection,
   addDoc,
-  getDocs,
   deleteDoc,
   doc,
-  serverTimestamp
+  serverTimestamp,
+  query,
+  where,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 const calendarNameInput = document.getElementById("calendarName");
 const createCalendarBtn = document.getElementById("createCalendarBtn");
 const calendarContainer = document.getElementById("calendarContainer");
-
 const installBtnContainer = document.getElementById("installBtnContainer");
 const installBtn = document.getElementById("installBtn");
 
-const calendarsRef = collection(db, "calendarios");
+let user = null; // Usuario actual
 
-/* ========================= CREAR CALENDARIO ========================= */
+// ===== LOGIN CON GOOGLE =====
+const provider = new GoogleAuthProvider();
+async function login() {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (err) {
+    console.error("Error login:", err);
+  }
+}
+
+// Verificar usuario
+onAuthStateChanged(auth, (currentUser) => {
+  if (currentUser) {
+    user = currentUser;
+    loadCalendars(); // cargar calendarios solo del usuario
+  } else {
+    login(); // pedir login si no hay usuario
+  }
+});
+
+// ===== CREAR CALENDARIO =====
 createCalendarBtn.addEventListener("click", async () => {
+  if (!user) return;
   const name = calendarNameInput.value.trim();
   if (!name) return;
 
   try {
-    await addDoc(calendarsRef, {
+    await addDoc(collection(db, "calendarios"), {
       nombre: name,
       tasks: [],
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
+      userId: user.uid // dueño del calendario
     });
-
     calendarNameInput.value = "";
-    loadCalendars();
   } catch (err) {
     console.error("Error al crear calendario:", err);
   }
 });
 
-/* ========================= CARGAR CALENDARIOS ========================= */
+// ===== CARGAR CALENDARIOS =====
 async function loadCalendars() {
+  if (!user) return;
+
   calendarContainer.innerHTML = "";
-  calendarContainer.classList.add("calendars-grid"); // agregamos grid
+  calendarContainer.classList.add("calendars-grid");
 
-  try {
-    const snapshot = await getDocs(calendarsRef);
+  const q = query(collection(db, "calendarios"), where("userId", "==", user.uid));
 
+  onSnapshot(q, (snapshot) => {
+    calendarContainer.innerHTML = "";
     if (snapshot.empty) {
       calendarContainer.innerHTML = "<p>No tienes calendarios creados.</p>";
       return;
@@ -53,57 +78,42 @@ async function loadCalendars() {
       const calendar = docSnap.data();
       const id = docSnap.id;
 
-      // Crear tarjeta
       const card = document.createElement("div");
       card.className = "calendar-card";
 
-      // Miniatura con inicial
       const thumbnail = document.createElement("div");
       thumbnail.className = "calendar-thumbnail";
       thumbnail.textContent = calendar.nombre.charAt(0).toUpperCase();
 
-      // Título
       const title = document.createElement("h3");
       title.textContent = calendar.nombre;
 
-      // Botón abrir
       const openBtn = document.createElement("button");
       openBtn.className = "open-btn";
       openBtn.textContent = "Abrir";
-      openBtn.onclick = () => {
-        window.location.href = `index.html?id=${id}`;
-      };
+      openBtn.onclick = () => window.location.href = `index.html?id=${id}`;
 
-      // Botón borrar
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "delete-btn";
       deleteBtn.textContent = "🗑️ Borrar";
       deleteBtn.onclick = async () => {
         if (confirm("¿Borrar este calendario?")) {
           await deleteDoc(doc(db, "calendarios", id));
-          loadCalendars();
         }
       };
 
-      // Agregar elementos a la tarjeta
       card.appendChild(thumbnail);
       card.appendChild(title);
       card.appendChild(openBtn);
       card.appendChild(deleteBtn);
 
-      // Agregar tarjeta al contenedor
       calendarContainer.appendChild(card);
     });
-  } catch (err) {
-    console.error("Error al cargar calendarios:", err);
-  }
+  });
 }
 
-loadCalendars();
-
-/* ========================= PWA – INSTALAR APP ========================= */
+// ===== PWA – INSTALAR APP =====
 let deferredPrompt;
-
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
@@ -112,14 +122,13 @@ window.addEventListener("beforeinstallprompt", (e) => {
 
 installBtn.addEventListener("click", async () => {
   if (!deferredPrompt) return;
-
   deferredPrompt.prompt();
   await deferredPrompt.userChoice;
   deferredPrompt = null;
   installBtnContainer.style.display = "none";
 });
 
-/* ========================= SERVICE WORKER ========================= */
+// ===== SERVICE WORKER =====
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js");
 }
