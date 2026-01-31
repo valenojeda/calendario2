@@ -9,17 +9,12 @@ body {
 
 h1 {
   font-size: 2rem;
-  color: #64b3a8;
+  color: #6c63ff;
   margin-bottom: 20px;
 }
 
 #userContainer {
   margin-bottom: 20px;
-}
-
-#userContainer span {
-  margin-right: 10px;
-  font-weight: bold;
 }
 
 #calendarName {
@@ -29,18 +24,40 @@ h1 {
   margin-right: 10px;
 }
 
-#createCalendarBtn {
+#createCalendarBtn, #signInBtn, #signOutBtn, #installBtn {
   padding: 10px 20px;
   font-size: 1rem;
-  background-color: #64b3a8;
-  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  margin-top: 5px;
 }
 
-#createCalendarBtn:hover {
-  background-color: #4a9981;
+#createCalendarBtn, #installBtn {
+  background-color: #6c63ff;
+  color: white;
+}
+
+#createCalendarBtn:hover, #installBtn:hover {
+  background-color: #574dcf;
+}
+
+#signInBtn {
+  background-color: #4285f4;
+  color: white;
+}
+
+#signInBtn:hover {
+  background-color: #3367d6;
+}
+
+#signOutBtn {
+  background-color: #db4437;
+  color: white;
+}
+
+#signOutBtn:hover {
+  background-color: #c33d2e;
 }
 
 .calendar-container {
@@ -52,19 +69,20 @@ h1 {
 }
 
 .calendar-card {
-  background-color: #e0f7fa;
+  background-color: #ffffff;
   border-radius: 12px;
   padding: 20px;
   width: 180px;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 10px;
 }
 
-.calendar-card .avatar {
-  background-color: #64b3a8;
+.avatar {
+  background-color: #6c63ff;
   color: white;
   font-size: 2rem;
   border-radius: 50%;
@@ -73,37 +91,26 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
 }
 
 .calendar-card button {
-  margin-top: 10px;
-  padding: 5px 10px;
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
+  width: 80px;
+  padding: 5px;
   border-radius: 5px;
+  border: none;
   cursor: pointer;
 }
 
 .calendar-card button:hover {
-  background-color: #cc3e3e;
+  opacity: 0.8;
 }
 
-#installBtnContainer {
-  margin-top: 20px;
-}
-
-#installBtn {
-  background-color: #64b3a8;
+.calendar-card button:first-of-type {
+  background-color: #4caf50;
   color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 8px;
-  cursor: pointer;
 }
 
-#installBtn:hover {
-  background-color: #4a9981;
+.calendar-card button:last-of-type {
+  background-color: #f44336;
+  color: white;
 }

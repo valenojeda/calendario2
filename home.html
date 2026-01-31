@@ -2,29 +2,26 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Calendarios</title>
+  <title>Organizador de Tareas</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="home.css" />
   <link rel="manifest" href="manifest.json" />
 </head>
 <body>
 
-  <h1>📅 Calendarios</h1>
+  <h1>📅 Organizador de Tareas</h1>
 
-  <!-- Contenedor de usuario: login/logout -->
   <div id="userContainer">
     <span id="userName"></span>
     <button id="signInBtn">Iniciar sesión con Google</button>
     <button id="signOutBtn" style="display:none;">Cerrar sesión</button>
   </div>
 
-  <!-- Crear calendario solo visible si está logueado -->
   <div id="createCalendarContainer" style="display:none;">
     <input type="text" id="calendarName" placeholder="Nombre del calendario" />
     <button id="createCalendarBtn">Crear calendario</button>
   </div>
 
-  <!-- Contenedor de tarjetas de calendarios -->
   <div class="calendar-container" id="calendarContainer"></div>
 
   <div id="installBtnContainer" style="display:none;">

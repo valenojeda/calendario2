@@ -2,21 +2,23 @@ import { db, auth } from "./firebase.js";
 import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-// Configuramos el provider de Google
+// Provider de Google
 const provider = new GoogleAuthProvider();
-// ⚡ Forzar siempre que el usuario elija la cuenta
 provider.setCustomParameters({ prompt: "select_account" });
 
+// DOM
 const signInBtn = document.getElementById("signInBtn");
 const signOutBtn = document.getElementById("signOutBtn");
 const userNameSpan = document.getElementById("userName");
-
 const createContainer = document.getElementById("createCalendarContainer");
 const calendarNameInput = document.getElementById("calendarName");
 const createCalendarBtn = document.getElementById("createCalendarBtn");
 const calendarContainer = document.getElementById("calendarContainer");
+const installBtnContainer = document.getElementById("installBtnContainer");
+const installBtn = document.getElementById("installBtn");
 
 let currentUser = null;
+let deferredPrompt;
 
 // ===== LOGIN / LOGOUT =====
 signInBtn.onclick = async () => {
@@ -39,7 +41,6 @@ onAuthStateChanged(auth, (user) => {
     signInBtn.style.display = "none";
     signOutBtn.style.display = "inline-block";
     createContainer.style.display = "block";
-
     loadCalendars();
   } else {
     currentUser = null;
@@ -127,10 +128,6 @@ async function loadCalendars() {
 }
 
 // ===== PWA – INSTALAR APP =====
-const installBtnContainer = document.getElementById("installBtnContainer");
-const installBtn = document.getElementById("installBtn");
-let deferredPrompt;
-
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
@@ -139,7 +136,6 @@ window.addEventListener("beforeinstallprompt", (e) => {
 
 installBtn.addEventListener("click", async () => {
   if (!deferredPrompt) return;
-
   deferredPrompt.prompt();
   await deferredPrompt.userChoice;
   deferredPrompt = null;
