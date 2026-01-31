@@ -11,17 +11,20 @@
 
   <h1>📅 Calendarios</h1>
 
+  <!-- Contenedor de usuario: login/logout -->
   <div id="userContainer">
     <span id="userName"></span>
     <button id="signInBtn">Iniciar sesión con Google</button>
     <button id="signOutBtn" style="display:none;">Cerrar sesión</button>
   </div>
 
+  <!-- Crear calendario solo visible si está logueado -->
   <div id="createCalendarContainer" style="display:none;">
     <input type="text" id="calendarName" placeholder="Nombre del calendario" />
     <button id="createCalendarBtn">Crear calendario</button>
   </div>
 
+  <!-- Contenedor de tarjetas de calendarios -->
   <div class="calendar-container" id="calendarContainer"></div>
 
   <div id="installBtnContainer" style="display:none;">
