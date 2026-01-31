@@ -12,13 +12,21 @@
 
   <h1>📅 Calendarios</h1>
 
+  <!-- BOTÓN DE LOGIN VISIBLE -->
+  <div id="loginContainer">
+    <button id="loginBtn">Iniciar sesión con Google</button>
+  </div>
+
+  <!-- CREAR CALENDARIO -->
   <div id="createCalendarContainer">
     <input type="text" id="calendarName" placeholder="Nombre del calendario" />
     <button id="createCalendarBtn">Crear calendario</button>
   </div>
 
+  <!-- CONTENEDOR DE CALENDARIOS -->
   <div class="calendar-container" id="calendarContainer"></div>
 
+  <!-- BOTÓN INSTALAR APP -->
   <div id="installBtnContainer" style="display:none;">
     <button id="installBtn">📲 Instalar la app</button>
   </div>
@@ -26,3 +34,4 @@
   <script type="module" src="home.js"></script>
 </body>
 </html>
+

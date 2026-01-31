@@ -17,25 +17,28 @@ const calendarContainer = document.getElementById("calendarContainer");
 const installBtnContainer = document.getElementById("installBtnContainer");
 const installBtn = document.getElementById("installBtn");
 
-let user = null; // Usuario actual
+const loginContainer = document.getElementById("loginContainer");
+const loginBtn = document.getElementById("loginBtn");
 
-// ===== LOGIN CON GOOGLE =====
-const provider = new GoogleAuthProvider();
-async function login() {
+let user = null;
+
+// ===== LOGIN MANUAL CON BOTÓN =====
+loginBtn.onclick = async () => {
   try {
+    const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
+    loginContainer.style.display = "none"; // ocultar botón
   } catch (err) {
     console.error("Error login:", err);
   }
-}
+};
 
-// Verificar usuario
+// ===== VERIFICAR SI HAY USUARIO LOGUEADO =====
 onAuthStateChanged(auth, (currentUser) => {
   if (currentUser) {
     user = currentUser;
-    loadCalendars(); // cargar calendarios solo del usuario
-  } else {
-    login(); // pedir login si no hay usuario
+    loginContainer.style.display = "none"; // ocultar botón si ya estaba logueado
+    loadCalendars();
   }
 });
 
@@ -50,7 +53,7 @@ createCalendarBtn.addEventListener("click", async () => {
       nombre: name,
       tasks: [],
       createdAt: serverTimestamp(),
-      userId: user.uid // dueño del calendario
+      userId: user.uid
     });
     calendarNameInput.value = "";
   } catch (err) {
