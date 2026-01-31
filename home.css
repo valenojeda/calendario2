@@ -1,0 +1,97 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f3f4f6;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  font-size: 2rem;
+  color: #64b3a8;
+  margin-bottom: 20px;
+}
+
+#calendarName {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+#createCalendarBtn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #64b3a8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#createCalendarBtn:hover {
+  background-color: #4a9981;
+}
+
+.calendar-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.calendar-card {
+  background-color: #e0f7fa;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  width: 150px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-icon {
+  background-color: #64b3a8;
+  color: white;
+  font-size: 2rem;
+  border-radius: 50%;
+  padding: 20px;
+  width: 60px;
+  height: 60px;
+  margin: 10px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #cc3e3e;
+}
+
+#installBtnContainer {
+  margin-top: 20px;
+}
+
+#installBtn {
+  background-color: #64b3a8;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#installBtn:hover {
+  background-color: #4a9981;
+}

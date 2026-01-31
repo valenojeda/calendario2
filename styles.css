@@ -1,0 +1,238 @@
+/* =========================
+   ESTILOS GENERALES
+========================= */
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: #f0fdf4;
+  padding: 20px;
+  margin: 0;
+}
+
+/* ENCABEZADO */
+h1 {
+  text-align: center;
+  color: #6366f1;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+/* ESTRUCTURA DE LA PÁGINA */
+.app {
+  display: flex;
+  gap: 15px;
+}
+
+/* CALENDARIO */
+.calendar {
+  background: #e0f9e3;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  flex: 1;
+  max-width: 380px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.calendar-header button {
+  background: #a5e7b2;
+  border: none;
+  padding: 5px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.day {
+  padding: 8px;
+  background: #eef2ff;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.9rem;
+}
+
+.day:hover {
+  background: #c7f7c1;
+}
+
+.day.has-task {
+  background: #a5e7b2;
+  font-weight: bold;
+}
+
+/* TABLERO */
+.board {
+  background: #e8f9e2;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  flex: 2;
+}
+
+.board h3 {
+  color: #6366f1;
+  font-size: 1.2rem;
+}
+
+.form input,
+.form textarea,
+.form select {
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 0.9rem;
+}
+
+.form textarea {
+  resize: vertical;
+  min-height: 40px;
+}
+
+.form button {
+  width: 100%;
+  padding: 8px;
+  background: #a5e7b2;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.9rem;
+}
+
+.form button:hover {
+  background: #81c6a1;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.column {
+  background: #f1f5f9;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.dropzone {
+  min-height: 100px;
+}
+
+.task {
+  padding: 6px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.2s;
+  font-size: 0.9rem;
+}
+
+.task:hover {
+  transform: scale(1.02);
+}
+
+.task button {
+  cursor: pointer;
+  background: #a5e7b2;
+  border-radius: 6px;
+  border: none;
+  margin-right: 4px;
+  padding: 2px 6px;
+  transition: background 0.2s;
+}
+
+.task button:hover {
+  background: #81c6a1;
+}
+
+/* Estilo para las tareas según la prioridad */
+.task.alta {
+  background-color: #ff4d4d; /* Rojo para alta prioridad */
+}
+
+.task.media {
+  background-color: #ffbf00; /* Amarillo para media prioridad */
+}
+
+.task.baja {
+  background-color: #c7f7c1; /* Verde suave para baja prioridad */
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 18px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 320px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content input,
+.modal-content textarea {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  resize: vertical;
+  font-size: 0.9rem;
+}
+
+.modal-content button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-right: 4px;
+  transition: background 0.2s;
+  font-size: 0.9rem;
+}
+
+.modal-content button:hover {
+  background: #a5e7b2;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
